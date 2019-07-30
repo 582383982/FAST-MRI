@@ -1,4 +1,4 @@
-from core.dataset.transforms import DataTransform
+from core.dataset.transforms import DataTransform, DataTransform_Test
 from core.dataset.subsample import MaskFunc
 from core.dataset.mri_data import SliceData
 from torch.utils.data import DataLoader
@@ -41,12 +41,13 @@ def create_data_loaders(cfg):
     return train_loader, dev_loader, display_loader
 
 def create_loader_for_infer(cfg):
+    cfg = cfg.infer_cfg
     mask_func = None
     if cfg.mask_kspace:
         mask_func = MaskFunc(cfg.center_fractions, cfg.accelerations)
     data = SliceData(
-        root=cfg.data_path / f'{cfg.challenge}_{cfg.data_split}',
-        transform=DataTransform(cfg.resolution, cfg.challenge, mask_func),
+        root=cfg.data_path,
+        transform=DataTransform_Test(cfg.resolution, cfg.challenge, mask_func),
         sample_rate=1.,
         challenge=cfg.challenge
     )

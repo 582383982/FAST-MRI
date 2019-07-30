@@ -94,9 +94,9 @@ def evaluate(args, recons_key):
 
 if __name__ == '__main__':
     parser = ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('target-path', type=pathlib.Path, required=True,
+    parser.add_argument('--target-path', type=pathlib.Path,
                         help='Path to the ground truth data')
-    parser.add_argument('predictions-path', type=pathlib.Path, required=True,
+    parser.add_argument('--predictions-path', type=pathlib.Path,
                         help='Path to reconstructions')
     parser.add_argument('--challenge', choices=['singlecoil', 'multicoil'], default='singlecoil',
                         help='Which challenge')

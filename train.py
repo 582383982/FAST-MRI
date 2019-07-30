@@ -13,11 +13,10 @@ import torch
 import logging
 import time
 import shutil
-def save_model(cfg, exp_dir, epoch, model, optimizer, best_dev_loss, is_new_best):
+def save_model(exp_dir, epoch, model, optimizer, best_dev_loss, is_new_best):
     torch.save(
         {
             'epoch': epoch,
-            'cfg': cfg,
             'model': model.state_dict(),
             'optimizer': optimizer.state_dict(),
             'best_dev_loss': best_dev_loss,
@@ -29,14 +28,15 @@ def save_model(cfg, exp_dir, epoch, model, optimizer, best_dev_loss, is_new_best
         shutil.copyfile(exp_dir / 'model.pt', exp_dir / 'best_model.pt')
 
 def load_model(cfg):
-    checkpoint = torch.load(cfg.train_cfg.ckpt)
-    load_cfg = checkpoint['cfg']
-    model = build_model(load_cfg)
-    if load_cfg.train_cfg.data_parallel:
+    import sys
+    sys.setrecursionlimit(20000)
+    checkpoint = torch.load('exp_dir/baseline_unet/model.pt')
+    model = build_model(cfg)
+    if cfg.train_cfg.data_parallel:
         model = torch.nn.DataParallel(model)
     model.load_state_dict(checkpoint['model'])
 
-    optimizer = build_optimizer(load_cfg.train_cfg.optimizer, model.parameters())
+    optimizer = build_optimizer(cfg.train_cfg.optimizer, model.parameters())
     optimizer.load_state_dict(checkpoint['optimizer'])
     return checkpoint, model, optimizer
 
@@ -134,7 +134,6 @@ def main():
     # model
     if cfg.train_cfg.resume:
         checkpoint, model, optimizer = load_model(cfg)
-        cfg = checkpoint['cfg']
         best_dev_loss = checkpoint['best_dev_loss']
         start_epoch = checkpoint['epoch']
         del checkpoint
@@ -153,6 +152,7 @@ def main():
     train_loader, dev_loader, display_loader = create_data_loaders(cfg)
 
     for epoch in range(start_epoch, cfg.train_cfg.num_epochs):
+        print('Epoch %d'%epoch)
         scheduler.step(epoch)
         train_loss, train_time = train_epoch(
             cfg, epoch, model, train_loader, optimizer, writer)
@@ -161,7 +161,7 @@ def main():
 
         is_new_best = dev_loss < best_dev_loss
         best_dev_loss = min(best_dev_loss, dev_loss)
-        save_model(cfg, log_dir, epoch, model,
+        save_model(log_dir, epoch, model,
                    optimizer, best_dev_loss, is_new_best)
         logging.info(
             f'Epoch = [{epoch:4d}/{cfg.train_cfg.num_epochs:4d}] TrainLoss = {train_loss:.4g} '

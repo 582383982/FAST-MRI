@@ -1,15 +1,19 @@
-from core.dataset.transforms import DataTransform_Test as DataTransform
-from torch.utils.data import DataLoader
 from core.dataset.utils import create_loader_for_infer as create_data_loader
-import torch
-from core.model.utils import build_model
-from collections import defaultdict
+from core.dataset.transforms import DataTransform_Test as DataTransform
 from core.dataset.utils import save_reconstructions
+from core.model.utils import build_model
+from torch.utils.data import DataLoader
+# from core.dataset import common as transforms
+from collections import defaultdict
 from mmcv import Config
 from tqdm import tqdm
 import numpy as np
 import argparse
 import pathlib
+import torch
+
+
+
 import sys
 
 def load_model(cfg):
@@ -43,13 +47,15 @@ def main(cfg):
     data_loader = create_data_loader(cfg)
     model = load_model(cfg)
     reconstructions = infer(cfg, model, data_loader)
-    save_reconstructions(reconstructions, cfg.out_dir)
+    save_reconstructions(reconstructions, cfg.infer_cfg.out_dir)
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
+    parser.add_argument('--cfg')
     parser.add_argument('--mask-kspace', action='store_true',
                         help='Whether to apply a mask (set to True for val data and False '
                              'for test data')
+    parser.add_argument('--data-parallel', action='store_true')
     parser.add_argument('--data-path', default=None, type=pathlib.Path)
     parser.add_argument('--ckpt', type=pathlib.Path, help='Path to the model')
     parser.add_argument('--out-dir', type=pathlib.Path, help='Path to save the reconstructions to')
@@ -69,8 +75,6 @@ if __name__ == '__main__':
     
     if args.ckpt:
         cfg.infer_cfg.ckpt = args.ckpt
-    else:
-        cfg.infer_cfg.ckpt = pathlib.Path(cfg.infer_cfg.ckpt)
 
     if args.out_dir:
         cfg.infer_cfg.out_dir = args.out_dir
@@ -78,4 +82,5 @@ if __name__ == '__main__':
         cfg.infer_cfg.out_dir = pathlib.Path(cfg.infer_cfg.out_dir)
     if args.device:
         cfg.infer_cfg.device
+    cfg.data_parallel = args.data_parallel
     main(cfg)

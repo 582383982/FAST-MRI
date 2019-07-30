@@ -98,22 +98,22 @@ class DataTransform_Test:
                 fname (pathlib.Path): Path to the input file
                 slice (int): Serial number of the slice
         """
-        kspace = transforms.to_tensor(kspace)
+        kspace = common.to_tensor(kspace)
         if self.mask_func is not None:
             seed = tuple(map(ord, fname))
-            masked_kspace, _ = transforms.apply_mask(kspace, self.mask_func, seed)
+            masked_kspace, _ = common.apply_mask(kspace, self.mask_func, seed)
         else:
             masked_kspace = kspace
         # Inverse Fourier Transform to get zero filled solution
-        image = transforms.ifft2(masked_kspace)
+        image = common.ifft2(masked_kspace)
         # Crop input image
-        image = transforms.complex_center_crop(image, (self.resolution, self.resolution))
+        image = common.complex_center_crop(image, (self.resolution, self.resolution))
         # Absolute value
-        image = transforms.complex_abs(image)
+        image = common.complex_abs(image)
         # Apply Root-Sum-of-Squares if multicoil data
         if self.which_challenge == 'multicoil':
-            image = transforms.root_sum_of_squares(image)
+            image = common.root_sum_of_squares(image)
         # Normalize input
-        image, mean, std = transforms.normalize_instance(image)
+        image, mean, std = common.normalize_instance(image)
         image = image.clamp(-6, 6)
         return image, mean, std, fname, slice

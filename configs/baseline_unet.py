@@ -33,11 +33,11 @@ data=dict(
     )
 )
 
-device='cpu'
+device='cuda'
 
 exp_dir='exp_dir/baseline_unet/'
 train_cfg=dict(
-    data_parallel=False,
+    data_parallel=True,
     optimizer=dict(
         name='RMSprop',
         params={
@@ -50,19 +50,19 @@ train_cfg=dict(
         'gamma': 0.1
     },
     resume=True,
-    ckpt=exp_dir+'model.pt',
+    ckpt='exp_dir/baseline_unet/model.pt',
     num_epochs=50
 )
 
 infer_cfg=dict(
-    mask_kspace=False,
-    data_path='data/singlecoil_test/',
-    center_fractions=[0.08],
-    accelerations=4,
+    mask_kspace=True,
+    data_path='data/singlecoil_val/',
+    center_fractions=[0.04],
+    accelerations=[8],
     challenge='singlecoil',
     resolution=320,
     batch_size=16,
     ckpt=exp_dir+'best_model.pt',
-    out_idr=exp_dir+'infer/',
+    out_dir=exp_dir+'infer/',
     device=device
 )
