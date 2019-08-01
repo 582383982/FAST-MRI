@@ -8,7 +8,7 @@ def create_datasets(cfg):
     mask_func = MaskFunc(cfg.center_fractions, cfg.accelerations)
     data = SliceData(
         root=cfg.data_path,
-        transform=DataTransform(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed),
+        transform=DataTransform(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed, cfg.crop, cfg.crop_size),
         sample_rate=cfg.sample_rate,
         challenge=cfg.challenge,
     )

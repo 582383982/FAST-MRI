@@ -1,12 +1,13 @@
 
 model=dict(
-    model_name='baseline_unet',
+    model_name='cprn',
     params={
         'in_chans': 1,
         'out_chans': 1,
-        'chans': 32,
-        'num_pool_layers': 4,
-        'drop_prob': 0.0
+        'num_cp': 2, 
+        'cp_chans': 32, 
+        'num_res': 8, 
+        'res_chans': 64
     }
 )
 
@@ -39,7 +40,7 @@ data=dict(
 
 device='cuda'
 
-exp_dir='exp_dir/baseline_unet/'
+exp_dir='exp_dir/cprn/'
 train_cfg=dict(
     data_parallel=True,
     optimizer=dict(
@@ -54,15 +55,15 @@ train_cfg=dict(
         'gamma': 0.1
     },
     resume=True,
-    ckpt='exp_dir/baseline_unet/model.pt',
+    ckpt=exp_dir+'model.pt',
     num_epochs=50
 )
 
 infer_cfg=dict(
     mask_kspace=True,
     data_path='data/singlecoil_val/',
-    center_fractions=[0.04],
-    accelerations=[8],
+    center_fractions=[0.08],
+    accelerations=[4],
     challenge='singlecoil',
     resolution=320,
     batch_size=16,

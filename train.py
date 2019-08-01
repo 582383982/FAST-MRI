@@ -28,9 +28,7 @@ def save_model(exp_dir, epoch, model, optimizer, best_dev_loss, is_new_best):
         shutil.copyfile(exp_dir / 'model.pt', exp_dir / 'best_model.pt')
 
 def load_model(cfg):
-    import sys
-    sys.setrecursionlimit(20000)
-    checkpoint = torch.load('exp_dir/baseline_unet/model.pt')
+    checkpoint = torch.load(cfg.train_cfg.ckpt)
     model = build_model(cfg)
     if cfg.train_cfg.data_parallel:
         model = torch.nn.DataParallel(model)
@@ -117,7 +115,7 @@ def visualize(cfg, epoch, model, data_loader, writer):
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('--cfg', help='train config file path',
-                        default='configs/baseline_unet.py')
+                        default='configs/cprn_cfg.py')
     # parser.add_argument('--work_dir', help='the dir to save logs and models')
     args = parser.parse_args()
     return args

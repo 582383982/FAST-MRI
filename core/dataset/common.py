@@ -7,7 +7,7 @@ LICENSE file in the root directory of this source tree.
 
 import numpy as np
 import torch
-
+import random
 
 def to_tensor(data):
     """
@@ -135,7 +135,17 @@ def center_crop(data, shape):
     w_to = w_from + shape[0]
     h_to = h_from + shape[1]
     return data[..., w_from:w_to, h_from:h_to]
-
+def random_crop(image, target, output_size):
+    w, h = image.shape[-2:]
+    th = tw = output_size
+    if w == tw and h == th:
+        return 0, 0, h, w
+    
+    i = random.randint(0, h - th)
+    j = random.randint(0, w - tw)
+    image = image[..., i:i+th, j:j+tw]
+    target = target[..., i:i+th, j:j+tw]
+    return image, target
 
 def complex_center_crop(data, shape):
     """

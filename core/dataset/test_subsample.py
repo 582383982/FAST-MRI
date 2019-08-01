@@ -24,15 +24,16 @@ def to_img(kspace, target, which_challenge, mask_func, resolution):
     image, mean, std = common.normalize_instance(image, eps=1e-11)
     image = image.clamp(-6, 6)
     target = common.to_tensor(target)
+    image, target = common.random_crop(image, target, 196)
     # Normalize target
     target = common.normalize(target, mean, std, eps=1e-11)
     target = target.clamp(-6, 6)
     return image.numpy(), target.numpy()
 
-@pytest.mark.parametrize('data_path, which_challenge', [
-    ('data/singlecoil_train/file1000000.h5', 'singlecoil'),
-    ('data/singlecoil_train/file1000000.h5', 'singlecoil')
-])
+# @pytest.mark.parametrize('data_path, which_challenge', [
+#     ('data/singlecoil_train/file1000000.h5', 'singlecoil'),
+#     ('data/singlecoil_train/file1000000.h5', 'singlecoil')
+# ])
 def test_data(data_path, which_challenge):
     print(data_path)
     sample = h5py.File(os.path.abspath(data_path))

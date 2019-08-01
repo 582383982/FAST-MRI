@@ -55,7 +55,7 @@ class ConvBlock(nn.Module):
             f'drop_prob={self.drop_prob})'
 
 
-class Model(nn.Module):
+class UnetModel(nn.Module):
     """
     PyTorch implementation of a U-Net model.
 
@@ -124,3 +124,6 @@ class Model(nn.Module):
             output = torch.cat([output, stack.pop()], dim=1)
             output = layer(output)
         return self.conv2(output)
+
+def get_model(name):
+    return UnetModel

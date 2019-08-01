@@ -2,7 +2,8 @@ import torch
 import importlib
 
 model_dict = {
-    'baseline_unet': 'core.model.unet_model'
+    'baseline_unet': {'pkg':'core.model.unet_model', 'name': 'UnetModel'},
+    'cprn': {'pkg':'core.model.cprn', 'name': 'cprn'}
 }
 
 def build_model(args):
@@ -10,6 +11,8 @@ def build_model(args):
     params = args.model.params
     if model_name not in model_dict.keys():
         raise 'No such model'
-    modlue = importlib.import_module(model_dict[model_name])
-    model = modlue.Model(**params).to(args.device)
+    module = importlib.import_module(model_dict[model_name]['pkg'])
+    Model = module.get_model(model_dict[model_name]['name'])
+    model = Model(**params)
+    model.to(args.device)
     return model
