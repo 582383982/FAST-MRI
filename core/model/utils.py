@@ -18,3 +18,6 @@ def build_model(args):
     model = Model(**params)
     model.to(args.device)
     return model
+
+def init_model(args):
+    pass

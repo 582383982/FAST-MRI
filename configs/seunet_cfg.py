@@ -67,7 +67,7 @@ infer_cfg=dict(
     challenge='singlecoil',
     resolution=320,
     batch_size=16,
-    ckpt=exp_dir+'best_model.pt',
+    ckpt=exp_dir+'model.pt',
     out_dir=exp_dir+'infer/',
     device=device
 )

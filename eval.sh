@@ -3,6 +3,6 @@
 # eval
 python eval.py --target-path data/singlecoil_val/ \
     --predictions-path exp_dir/dbpn/infer \
-    --challenge singlecoil \
-    --acquisition CORPDFS_FBK
+    --challenge singlecoil 
+    # --acquisition CORPDFS_FBK
     # --acquisition CORPDFS_FBK
