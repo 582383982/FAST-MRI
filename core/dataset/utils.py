@@ -17,6 +17,7 @@ def create_datasets(cfg):
 def create_data_loaders(cfg):
     train_data = create_datasets(cfg.data.train)
     dev_data = create_datasets(cfg.data.val)
+    dev_data = [dev_data[i] for i in range(cfg.data.val.val_count)]
     display_data = [dev_data[i] for i in range(0, len(dev_data), len(dev_data) // 16)]
 
     train_loader = DataLoader(

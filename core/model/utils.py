@@ -3,7 +3,8 @@ import importlib
 
 model_dict = {
     'baseline_unet': {'pkg':'core.model.unet_model', 'name': 'UnetModel'},
-    'cprn': {'pkg':'core.model.cprn', 'name': 'cprn'}
+    'cprn': {'pkg':'core.model.cprn', 'name': 'cprn'},
+    'dbpn': {'pkg':'core.model.dbpn.dbpn_model', 'name': 'dbpn'}
 }
 
 def build_model(args):

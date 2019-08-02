@@ -115,7 +115,7 @@ def visualize(cfg, epoch, model, data_loader, writer):
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('--cfg', help='train config file path',
-                        default='configs/cprn_cfg.py')
+                        default='configs/dbpn_cfg.py')
     # parser.add_argument('--work_dir', help='the dir to save logs and models')
     args = parser.parse_args()
     return args

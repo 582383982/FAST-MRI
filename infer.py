@@ -51,7 +51,7 @@ def main(cfg):
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
-    parser.add_argument('--cfg')
+    parser.add_argument('--cfg', default='configs/dbpn_cfg.py')
     parser.add_argument('--mask-kspace', action='store_true',
                         help='Whether to apply a mask (set to True for val data and False '
                              'for test data')
