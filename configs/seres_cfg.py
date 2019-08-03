@@ -1,12 +1,11 @@
 
 model=dict(
-    model_name='se_unet',
+    model_name='se_res',
     params={
         'in_chans': 1,
         'out_chans': 1,
-        'chans': 32,
-        'num_pool_layers': 4,
-        'drop_prob': 0.0
+        'n_resblocks': 8,
+        'n_feats': 32
     }
 )
 
@@ -42,13 +41,13 @@ data=dict(
 
 device='cuda'
 
-exp_dir='exp_dir/se_unet/'
+exp_dir='exp_dir/se_res/'
 train_cfg=dict(
     data_parallel=True,
     optimizer=dict(
         name='RMSprop',
         params={
-            'lr':1e-3,
+            'lr':1e-4,
             'weight_decay':0.
         }
     ),

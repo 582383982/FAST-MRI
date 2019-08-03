@@ -1,5 +1,6 @@
 from core.dataset import common
 import numpy as np
+import torch
 class DataTransform:
     """
     Data Transformer for training U-Net models.
@@ -67,12 +68,60 @@ class DataTransform:
             image, target = common.random_crop(image, target, self.crop_size)
         return image, target, mean, std, attrs['norm'].astype(np.float32)
 
+class DataTransform_3D:
+    def __init__(self, mask_func, resolution, which_challenge, use_seed=True, patch_size=48):
+        if which_challenge not in ('singlecoil', 'multicoil'):
+            raise ValueError(f'Challenge should either be "singlecoil" or "multicoil"')
+        self.mask_func = mask_func
+        self.resolution = resolution
+        self.which_challenge = which_challenge
+        self.use_seed = use_seed
+
+    def __call__(self, kspace, y, attrs, fname):
+        images, targets = [], []
+        means, stds = [], []
+        for i in range(kspace.shape[0]):
+            s = kspace[i]
+            t = y[i]
+            image, target, mean, std = self.single(s, t, fname+str(i))
+            images.append(image)
+            targets.append(target)
+            means.append(mean)
+            stds.append(std)
+        images = torch.stack(images)
+        targets = torch.stack(targets)
+        return images, targets, means, stds, attrs['norm'].astype(np.float32)
+    
+    def single(self, kspace, target, fname):
+        kspace = common.to_tensor(kspace)
+        # Apply mask
+        seed = None if not self.use_seed else tuple(map(ord, fname))
+        masked_kspace, mask = common.apply_mask(kspace, self.mask_func, seed)
+        # Inverse Fourier Transform to get zero filled solution
+        image = common.ifft2(masked_kspace)
+        # Crop input image
+        image = common.complex_center_crop(image, (self.resolution, self.resolution))
+        # Absolute value
+        image = common.complex_abs(image)
+        # Apply Root-Sum-of-Squares if multicoil data
+        if self.which_challenge == 'multicoil':
+            image = common.root_sum_of_squares(image)
+        # Normalize input
+        image, mean, std = common.normalize_instance(image, eps=1e-11)
+        image = image.clamp(-6, 6)
+
+        target = common.to_tensor(target)
+        # Normalize target
+        target = common.normalize(target, mean, std, eps=1e-11)
+        target = target.clamp(-6, 6)
+        return image, target, mean, std
+
 class DataTransform_Patch:
     """
     Data Transformer for training U-Net models.
     """
 
-    def __init__(self, mask_func, resolution, which_challenge, use_seed=True, patch_size=48):
+    def __init__(self, mask_func, resolution, which_challenge, use_seed=True):
         if which_challenge not in ('singlecoil', 'multicoil'):
             raise ValueError(f'Challenge should either be "singlecoil" or "multicoil"')
         self.mask_func = mask_func

@@ -1,70 +1,15 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from core.model.senet.base_module import SELayer
+from core.model.senet.base_module import SELayer, ConvBlock, SEResBlock
 
-class ConvBlock(nn.Module):
-    """
-    A Convolutional Block that consists of two convolution layers each followed by
-    instance normalization, relu activation and dropout.
-    """
-
-    def __init__(self, in_chans, out_chans, drop_prob):
-        """
-        Args:
-            in_chans (int): Number of channels in the input.
-            out_chans (int): Number of channels in the output.
-            drop_prob (float): Dropout probability.
-        """
-        super().__init__()
-
-        self.in_chans = in_chans
-        self.out_chans = out_chans
-        self.drop_prob = drop_prob
-
-        self.layers = nn.Sequential(
-            nn.Conv2d(in_chans, out_chans, kernel_size=3, padding=1),
-            nn.InstanceNorm2d(out_chans),
-            nn.ReLU(),
-            nn.Dropout2d(drop_prob),
-            nn.Conv2d(out_chans, out_chans, kernel_size=3, padding=1),
-            nn.InstanceNorm2d(out_chans),
-            nn.ReLU(),
-            nn.Dropout2d(drop_prob)
-        )
-
-    def forward(self, input):
-        """
-        Args:
-            input (torch.Tensor): Input tensor of shape [batch_size, self.in_chans, height, width]
-
-        Returns:
-            (torch.Tensor): Output tensor of shape [batch_size, self.out_chans, height, width]
-        """
-        return self.layers(input)
-
-    def __repr__(self):
-        return f'ConvBlock(in_chans={self.in_chans}, out_chans={self.out_chans}, ' \
-            f'drop_prob={self.drop_prob})'
 # class BottleNeck(nn.Module):
 #     def __init__(self, in_chans, out_chans):
 #         self.conv1 = nn.Conv2d(in_chans, in_chans, kernel_size)
 #         self.conv2 = nn.Conv2d(in_chans, in_chans, kernel_size=3, padding=1)
 #         self.conv3 = nn.Conv2d(in_chans, out_chans, kernel_size=1)
 #         pass
-class SEBlock(nn.Module):
-    def __init__(self, in_chans, out_chans, drop_prob, res=True):
-        super(SEBlock, self).__init__()
-        self.res = False
-        self.conv = ConvBlock(in_chans, out_chans, drop_prob)
-        self.se = SELayer(out_chans)
-        
-    def forward(self, x):
-        features = self.conv(x)
-        out = self.se(features)
-        if self.res:
-            out = features + out
-        return out
+
 
 class SEUnetModel(nn.Module):
     """
@@ -93,18 +38,18 @@ class SEUnetModel(nn.Module):
         self.num_pool_layers = num_pool_layers
         self.drop_prob = drop_prob
 
-        self.down_sample_layers = nn.ModuleList([SEBlock(in_chans, chans, drop_prob)])
+        self.down_sample_layers = nn.ModuleList([SEResBlock(in_chans, chans, drop_prob)])
         ch = chans
         for i in range(num_pool_layers - 1):
-            self.down_sample_layers += [SEBlock(ch, ch * 2, drop_prob)]
+            self.down_sample_layers += [SEResBlock(ch, ch * 2, drop_prob)]
             ch *= 2
-        self.conv = SEBlock(ch, ch, drop_prob)
+        self.conv = SEResBlock(ch, ch, drop_prob)
 
         self.up_sample_layers = nn.ModuleList()
         for i in range(num_pool_layers - 1):
-            self.up_sample_layers += [SEBlock(ch * 2, ch // 2, drop_prob)]
+            self.up_sample_layers += [SEResBlock(ch * 2, ch // 2, drop_prob)]
             ch //= 2
-        self.up_sample_layers += [SEBlock(ch * 2, ch, drop_prob)]
+        self.up_sample_layers += [SEResBlock(ch * 2, ch, drop_prob)]
         self.conv2 = nn.Sequential(
             nn.Conv2d(ch, ch // 2, kernel_size=1),
             nn.Conv2d(ch // 2, out_chans, kernel_size=1),

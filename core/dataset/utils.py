@@ -1,23 +1,31 @@
-from core.dataset.transforms import DataTransform, DataTransform_Test
+from core.dataset.transforms import DataTransform, DataTransform_Test, DataTransform_3D
 from core.dataset.subsample import MaskFunc
 from core.dataset.mri_data import SliceData
+from core.dataset.mri_3d import Data3D
 from torch.utils.data import DataLoader
 import json
 import h5py
 def create_datasets(cfg):
     mask_func = MaskFunc(cfg.center_fractions, cfg.accelerations)
-    data = SliceData(
-        root=cfg.data_path,
-        transform=DataTransform(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed, cfg.crop, cfg.crop_size),
-        sample_rate=cfg.sample_rate,
-        challenge=cfg.challenge,
-    )
+    if cfg.type=='slice':
+        data = SliceData(
+            root=cfg.data_path,
+            transform=DataTransform(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed, cfg.crop, cfg.crop_size),
+            sample_rate=cfg.sample_rate,
+            challenge=cfg.challenge,
+        )
+    elif cfg.type=='3d':
+        data = Data3D(
+            root=cfg.data_path,
+            transform=DataTransform_3D(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed),
+            challenge=cfg.challenge,
+        )
     return data
 
 def create_data_loaders(cfg):
     train_data = create_datasets(cfg.data.train)
     dev_data = create_datasets(cfg.data.val)
-    dev_data = [dev_data[i] for i in range(cfg.data.val.val_count)]
+    # dev_data = [dev_data[i] for i in range(cfg.data.val.val_count)]
     display_data = [dev_data[i] for i in range(0, len(dev_data), len(dev_data) // 16)]
 
     train_loader = DataLoader(
