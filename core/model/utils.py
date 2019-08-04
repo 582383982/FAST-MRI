@@ -8,6 +8,7 @@ model_dict = {
     'se_unet': {'pkg':'core.model.senet.se_unet', 'name': 'seunet'},
     'vnet':{'pkg':'core.model.vnet', 'name': 'vnet'},
     'se_res':{'pkg':'core.model.senet.se_resnet', 'name': 'seres'},
+    'mdn_net':{'pkg':'core.model.mdn_net', 'name': 'mdn_net'}
 }
 
 def build_model(args):
