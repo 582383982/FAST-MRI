@@ -1,5 +1,5 @@
 # infer
-# python infer.py --cfg configs/nonlocal_unet_cfg.py --mask-kspace
+python infer.py --cfg configs/attunet_cfg.py --mask-kspace --data-parallel
 # eval
 # python infer.py --cfg configs/mdn_cfg.py --data-parallel
 python eval.py --target-path data/singlecoil_val/ \
