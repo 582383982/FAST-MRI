@@ -57,12 +57,12 @@ class MDN_NET(nn.Module):
         self.block_3 = MDN_Block()
     def forward(self, x):
         feats_1 = self.block_1(x)
-        res_1 = feats_1 + x
-        feats_2 = self.block_2(res_1)
-        res_2 = res_1 + x
-        feats_3 = self.block_2(res_2)
-        res_3 = res_1 + x
-        return res_3
+        # res_1 = feats_1 + x
+        feats_2 = self.block_2(feats_1)
+        # res_2 = res_1 + x
+        feats_3 = self.block_2(feats_2)
+        # res_3 = res_1 + x
+        return feats_3
 
 def get_model(name):
     return MDN_NET

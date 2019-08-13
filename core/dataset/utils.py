@@ -24,6 +24,7 @@ def create_datasets(cfg):
 
 def create_data_loaders(cfg):
     train_data = create_datasets(cfg.data.train)
+    # train_data = [train_data[i] for i in range(320)]
     dev_data = create_datasets(cfg.data.val)
     # dev_data = [dev_data[i] for i in range(cfg.data.val.val_count)]
     display_data = [dev_data[i] for i in range(0, len(dev_data), len(dev_data) // 16)]
@@ -63,7 +64,7 @@ def create_loader_for_infer(cfg):
     data_loader = DataLoader(
         dataset=data,
         batch_size=cfg.batch_size,
-        num_workers=4,
+        num_workers=0,
         pin_memory=True,
     )
     return data_loader

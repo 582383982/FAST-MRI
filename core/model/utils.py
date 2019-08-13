@@ -8,7 +8,9 @@ model_dict = {
     'se_unet': {'pkg':'core.model.senet.se_unet', 'name': 'seunet'},
     'vnet':{'pkg':'core.model.vnet', 'name': 'vnet'},
     'se_res':{'pkg':'core.model.senet.se_resnet', 'name': 'seres'},
-    'mdn_net':{'pkg':'core.model.mdn_net', 'name': 'mdn_net'}
+    'mdn_net':{'pkg':'core.model.mdn_net', 'name': 'mdn_net'},
+    'antialiase_unet':{'pkg':'core.model.antialiase.model', 'name': 'UnetModel'},
+    'nonlocal_unet':{'pkg':'core.model.non_local.model', 'name': 'UnetModel'}
 }
 
 def build_model(args):
