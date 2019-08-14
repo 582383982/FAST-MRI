@@ -63,12 +63,12 @@ train_cfg=dict(
 infer_cfg=dict(
     mask_kspace=True,
     data_path='data/singlecoil_val/',
-    center_fractions=[0.04],
-    accelerations=[8],
+    center_fractions=[0.08],
+    accelerations=[4],
     challenge='singlecoil',
     resolution=320,
     batch_size=16,
     ckpt=exp_dir+'best_model.pt',
-    out_dir=exp_dir+'infer/',
+    out_dir='data/tmp/',
     device=device
 )
