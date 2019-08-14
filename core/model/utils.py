@@ -14,6 +14,9 @@ model_dict = {
     'attention_unet':{'pkg':'core.model.attention_unet', 'name': 'UnetModel'},
     'dilated_unet_add':{'pkg':'core.model.receptive_field.dilated_unet_add', 'name': 'UnetModel'},
     'dilated_unet_cat':{'pkg':'core.model.receptive_field.dilated_unet_cat', 'name': 'UnetModel'},
+    'dilated_stack_unet':{'pkg':'core.model.receptive_field.dilated_stack_cnn_unet', 'name': 'UnetModel'},
+    'dilated_unet_double_add':{'pkg':'core.model.receptive_field.dilated_unet_double', 'name': 'UnetModel'},
+    # 'dilated_unet_cat':{'pkg':'core.model.receptive_field.dilated_unet_cat', 'name': 'UnetModel'},
 }
 
 def build_model(args):

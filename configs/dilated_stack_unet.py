@@ -1,6 +1,6 @@
 
 model=dict(
-    model_name='dilated_unet_add',
+    model_name='dilated_stack_unet',
     params={
         'in_chans': 1,
         'out_chans': 1,
@@ -41,7 +41,7 @@ data=dict(
 
 device='cuda'
 
-exp_dir='exp_dir/dilated_unet_add/'
+exp_dir='exp_dir/dilated_stack_unet/'
 train_cfg=dict(
     data_parallel=True,
     optimizer=dict(

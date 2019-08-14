@@ -128,7 +128,7 @@ def main():
     # prepare log
     log_dir = pathlib.Path(cfg.exp_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
-    writer = SummaryWriter(log_dir=log_dir/'summary')
+    writer = SummaryWriter(log_dir/'summary')
 
     # model
     if cfg.train_cfg.resume:

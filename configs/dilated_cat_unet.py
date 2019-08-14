@@ -69,6 +69,6 @@ infer_cfg=dict(
     resolution=320,
     batch_size=16,
     ckpt=exp_dir+'best_model.pt',
-    out_dir='/home/ubuntu/BigVolume/tmp/',
+    out_dir='data/tmp/',
     device=device
 )
