@@ -12,6 +12,8 @@ model_dict = {
     'antialiase_unet':{'pkg':'core.model.antialiase.model', 'name': 'UnetModel'},
     'nonlocal_unet':{'pkg':'core.model.non_local.model', 'name': 'UnetModel'},
     'attention_unet':{'pkg':'core.model.attention_unet', 'name': 'UnetModel'},
+    'dilated_unet_add':{'pkg':'core.model.receptive_field.dilated_unet_add', 'name': 'UnetModel'},
+    'dilated_unet_cat':{'pkg':'core.model.receptive_field.dilated_unet_cat', 'name': 'UnetModel'},
 }
 
 def build_model(args):
