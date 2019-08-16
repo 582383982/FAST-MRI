@@ -2,6 +2,8 @@
 model=dict(
     model_name='vnet',
     params={
+        'inChans':1,
+        'startChans':16,
         'elu': True,
         'nll': False
     }
@@ -17,7 +19,9 @@ data=dict(
         accelerations=[4, 8],
         sample_rate=1.0,
         batch_size=1,
-        use_seed=False
+        use_seed=False,
+        crop=True, 
+        crop_size=96
     ),
     val=dict(
         type='3d',

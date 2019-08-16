@@ -1,7 +1,7 @@
 from core.dataset.transforms import DataTransform, DataTransform_Test, DataTransform_3D
 from core.dataset.subsample import MaskFunc
 from core.dataset.mri_data import SliceData
-from core.dataset.mri_3d import Data3D
+from core.dataset.mri_data3d import Data3D
 from torch.utils.data import DataLoader
 import json
 import h5py
@@ -17,7 +17,7 @@ def create_datasets(cfg):
     elif cfg.type=='3d':
         data = Data3D(
             root=cfg.data_path,
-            transform=DataTransform_3D(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed),
+            transform=DataTransform_3D(mask_func, cfg.resolution, cfg.challenge, cfg.use_seed, cfg.crop, cfg.crop_size),
             challenge=cfg.challenge,
         )
     return data

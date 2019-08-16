@@ -6,7 +6,7 @@ model_dict = {
     'cprn': {'pkg':'core.model.cprn', 'name': 'cprn'},
     'dbpn': {'pkg':'core.model.dbpn.dbpn_model', 'name': 'dbpn'},
     'se_unet': {'pkg':'core.model.senet.se_unet', 'name': 'seunet'},
-    'vnet':{'pkg':'core.model.vnet', 'name': 'vnet'},
+    'vnet':{'pkg':'core.model.3d_model.vnet', 'name': 'vnet'},
     'se_res':{'pkg':'core.model.senet.se_resnet', 'name': 'seres'},
     'mdn_net':{'pkg':'core.model.mdn_net', 'name': 'mdn_net'},
     'antialiase_unet':{'pkg':'core.model.antialiase.model', 'name': 'UnetModel'},

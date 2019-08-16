@@ -69,13 +69,15 @@ class DataTransform:
         return image, target, mean, std, attrs['norm'].astype(np.float32)
 
 class DataTransform_3D:
-    def __init__(self, mask_func, resolution, which_challenge, use_seed=True, patch_size=48):
+    def __init__(self, mask_func, resolution, which_challenge, use_seed=True, crop=False, crop_size=48):
         if which_challenge not in ('singlecoil', 'multicoil'):
             raise ValueError(f'Challenge should either be "singlecoil" or "multicoil"')
         self.mask_func = mask_func
         self.resolution = resolution
         self.which_challenge = which_challenge
         self.use_seed = use_seed
+        self.crop = crop
+        self.crop_size = crop_size
 
     def __call__(self, kspace, y, attrs, fname):
         images, targets = [], []
@@ -90,7 +92,9 @@ class DataTransform_3D:
             stds.append(std)
         images = torch.stack(images)
         targets = torch.stack(targets)
-        return images, targets, means, stds, attrs['norm'].astype(np.float32)
+        if self.crop:
+            images, targets = common.random_crop(images, targets, self.crop_size)
+        return images, targets, torch.stack(means), torch.stack(stds), attrs['norm'].astype(np.float32)
     
     def single(self, kspace, target, fname):
         kspace = common.to_tensor(kspace)
