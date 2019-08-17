@@ -1,37 +1,38 @@
 
 model=dict(
-    model_name='vnet',
+    model_name='baseline_unet',
     params={
-        'inChans':1,
-        'startChans':16,
-        'elu': True,
-        'nll': False
+        'in_chans': 1,
+        'out_chans': 1,
+        'chans': 32,
+        'num_pool_layers': 4,
+        'drop_prob': 0.2
     }
 )
 
 data=dict(
     train=dict(
-        type='3d',
+        type='slice',
         data_path='data/singlecoil_train',
         challenge='singlecoil',
         resolution=320,
         center_fractions=[0.08, 0.04],
         accelerations=[4, 8],
         sample_rate=1.0,
-        batch_size=1,
+        batch_size=16,
         use_seed=False,
-        crop=True, 
-        crop_size=96
+        crop=False, 
+        crop_size=48
     ),
     val=dict(
-        type='3d',
+        type='slice',
         data_path='data/singlecoil_val',
         challenge='singlecoil',
         resolution=320,
         center_fractions=[0.08, 0.04],
         accelerations=[4, 8],
         sample_rate=1.0,
-        batch_size=1,
+        batch_size=16,
         use_seed=True,
         crop=False, 
         crop_size=48
@@ -40,7 +41,7 @@ data=dict(
 
 device='cuda'
 
-exp_dir='exp_dir/vnet/'
+exp_dir='exp_dir/baseline_unet_drop/'
 train_cfg=dict(
     data_parallel=True,
     optimizer=dict(
@@ -55,7 +56,7 @@ train_cfg=dict(
         'gamma': 0.1
     },
     resume=False,
-    ckpt=exp_dir +'model.pt',
+    ckpt=exp_dir+'model.pt',
     num_epochs=50
 )
 
@@ -66,8 +67,8 @@ infer_cfg=dict(
     accelerations=[8],
     challenge='singlecoil',
     resolution=320,
-    batch_size=1,
+    batch_size=16,
     ckpt=exp_dir+'best_model.pt',
-    out_dir='data/tmp/',
+    out_dir=exp_dir+'infer/',
     device=device
 )

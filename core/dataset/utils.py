@@ -1,4 +1,4 @@
-from core.dataset.transforms import DataTransform, DataTransform_Test, DataTransform_3D
+from core.dataset.transforms import DataTransform, DataTransform_Test, DataTransform_3D, DataTransform_3DTest
 from core.dataset.subsample import MaskFunc
 from core.dataset.mri_data import SliceData
 from core.dataset.mri_data3d import Data3D
@@ -51,16 +51,24 @@ def create_data_loaders(cfg):
     return train_loader, dev_loader, display_loader
 
 def create_loader_for_infer(cfg):
+    data_type = cfg.data.val.type
     cfg = cfg.infer_cfg
     mask_func = None
     if cfg.mask_kspace:
         mask_func = MaskFunc(cfg.center_fractions, cfg.accelerations)
-    data = SliceData(
-        root=cfg.data_path,
-        transform=DataTransform_Test(cfg.resolution, cfg.challenge, mask_func),
-        sample_rate=1.,
-        challenge=cfg.challenge
-    )
+    if data_type == 'slice':
+        data = SliceData(
+            root=cfg.data_path,
+            transform=DataTransform_Test(cfg.resolution, cfg.challenge, mask_func),
+            sample_rate=1.,
+            challenge=cfg.challenge
+        )
+    else:
+        data = Data3D(
+            root=cfg.data_path,
+            transform=DataTransform_3DTest(mask_func, cfg.resolution, cfg.challenge),
+            challenge=cfg.challenge
+        )
     data_loader = DataLoader(
         dataset=data,
         batch_size=cfg.batch_size,

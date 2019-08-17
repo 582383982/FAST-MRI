@@ -107,7 +107,6 @@ def visualize(cfg, epoch, model, data_loader, writer):
             input = input.unsqueeze(1).to(cfg.device)
             target = target.unsqueeze(1).to(cfg.device)
             output = model(input)
-            print(target.size())
             target = target.squeeze(1).permute(1, 0, 2, 3)
             output = output.squeeze(1).permute(1, 0, 2, 3)
             save_image(target, 'Target')

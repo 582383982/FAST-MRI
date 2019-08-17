@@ -211,3 +211,45 @@ class DataTransform_Test:
         image, mean, std = common.normalize_instance(image)
         image = image.clamp(-6, 6)
         return image, mean, std, fname, slice
+
+class DataTransform_3DTest:
+    def __init__(self, mask_func, resolution, which_challenge, use_seed=True, crop=False, crop_size=48):
+        if which_challenge not in ('singlecoil', 'multicoil'):
+            raise ValueError(f'Challenge should either be "singlecoil" or "multicoil"')
+        self.mask_func = mask_func
+        self.resolution = resolution
+        self.which_challenge = which_challenge
+        self.use_seed = use_seed
+        self.crop = crop
+        self.crop_size = crop_size
+
+    def __call__(self, kspace, y, attrs, fname):
+        images = []
+        means, stds = [], []
+        for i in range(kspace.shape[0]):
+            s = kspace[i]
+            image, mean, std = self.single(s, fname+str(i))
+            images.append(image)
+            means.append(mean)
+            stds.append(std)
+        images = torch.stack(images)
+        return images, torch.stack(means), torch.stack(stds), fname
+    
+    def single(self, kspace, fname):
+        kspace = common.to_tensor(kspace)
+        # Apply mask
+        seed = None if not self.use_seed else tuple(map(ord, fname))
+        masked_kspace, mask = common.apply_mask(kspace, self.mask_func, seed)
+        # Inverse Fourier Transform to get zero filled solution
+        image = common.ifft2(masked_kspace)
+        # Crop input image
+        image = common.complex_center_crop(image, (self.resolution, self.resolution))
+        # Absolute value
+        image = common.complex_abs(image)
+        # Apply Root-Sum-of-Squares if multicoil data
+        if self.which_challenge == 'multicoil':
+            image = common.root_sum_of_squares(image)
+        # Normalize input
+        image, mean, std = common.normalize_instance(image, eps=1e-11)
+        image = image.clamp(-6, 6)
+        return image, mean, std
